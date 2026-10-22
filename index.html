@@ -2,10 +2,10 @@
 <meta name="description" content="Give so each one can buy the same. Plan gifts so every church or charity can buy the same thing in its own country.">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Jim's Gift Equalizer">
 <meta property="og:title" content="Jim's Gift Equalizer"><meta property="og:description" content="Give so each one can buy the same. Plan gifts so every church or charity can buy the same thing in its own country.">
-<meta property="og:url" content="https://ploug76.github.io/jims-gift-equalizer/"><meta property="og:image" content="https://ploug76.github.io/jims-gift-equalizer/preview.png"><meta property="og:image:secure_url" content="https://ploug76.github.io/jims-gift-equalizer/preview.png">
+<meta property="og:url" content="https://ploug76.github.io/jims-gift-equalizer/"><meta property="og:image" content="https://ploug76.github.io/jims-gift-equalizer/preview.png?v=2"><meta property="og:image:secure_url" content="https://ploug76.github.io/jims-gift-equalizer/preview.png?v=2">
 <meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Jim's Gift Equalizer: stained-glass window with the title and 'Give so each one can buy the same.'">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Jim's Gift Equalizer"><meta name="twitter:description" content="Give so each one can buy the same. Plan gifts so every church or charity can buy the same thing in its own country."><meta name="twitter:image" content="https://ploug76.github.io/jims-gift-equalizer/preview.png">
+<meta property="og:image:alt" content="Jim's Gift Equalizer: Jim drawn in stained glass beside the title and 'Give so each one can buy the same.'">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Jim's Gift Equalizer"><meta name="twitter:description" content="Give so each one can buy the same. Plan gifts so every church or charity can buy the same thing in its own country."><meta name="twitter:image" content="https://ploug76.github.io/jims-gift-equalizer/preview.png?v=2">
 <link rel="icon" type="image/png" href="icon.png"><link rel="apple-touch-icon" href="icon.png"><meta name="theme-color" content="#0a301e">
 <title>Jim's Gift Equalizer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
@@ -42,6 +42,9 @@ button:active{background:var(--green2)}button.on{background:#0f8a45;box-shadow:0
 #clist2 button{display:block;width:100%;text-align:left;margin:6px 0;min-height:54px;background:#134d2c;border-color:#2c7a4a}
 #clist2 .cur{background:#0f8a45;box-shadow:0 0 0 3px var(--gold)}#clist2 small{opacity:.8;font-weight:700}
 body.lock{overflow:hidden}
+.jimhead{display:flex;align-items:center;gap:14px}.jimP{width:104px;height:124px;flex:none;object-fit:cover;object-position:50% 20%;border-radius:52px 52px 12px 12px;border:4px solid var(--gold);outline:3px solid #111;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.jimA{width:52px;height:52px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);vertical-align:middle;margin-right:10px}
+@media(max-width:360px){.jimP{width:84px;height:100px}}
 [hidden]{display:none!important}
 </style></head><body>
 <div id="glass"><svg viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -56,12 +59,12 @@ body.lock{overflow:hidden}
 
 <main class="wrap">
 <button id="howOpen" type="button" hidden>❔ How to use this</button>
-<section class="panel howto" id="howto"><h2>How to use this</h2><ol>
+<section class="panel howto" id="howto"><h2><img class="jimA" src="jim.jpg" alt="Jim">How to use this</h2><ol>
 <li>Type what they're buying.</li><li>Enter the cost of one in the United States (or tap a chip).</li><li>Pick how many each gets.</li>
 <li>Add each recipient: tap the country, add the name / charity.</li><li>Each row shows what to send; type a real local price if you know it.</li>
 <li>Total is at the bottom; tap Copy plan to share.</li></ol><p>This plans the amounts. It does not send money.</p><div class="actions"><button id="gotIt" type="button" style="font-size:22px;min-height:60px">✓ Got it</button></div></section>
 <section class="panel">
-<h1>Jim's Gift Equalizer</h1><p class="sub">Give so each one can buy the same.</p>
+<div class="jimhead"><img class="jimP" src="jim.jpg" alt="Jim"><div><h1>Jim's Gift Equalizer</h1><p class="sub">Give so each one can buy the same.</p></div></div>
 <label for="item">What are they buying?</label><input id="item" placeholder="example: supplies" value="supplies">
 <label for="us">Cost of one in the United States</label><div class="money"><span>$</span><input id="us" class="big" type="number" inputmode="decimal" min="0" step="0.01" value="50"></div>
 <div class="chips" id="usChips"></div>
