@@ -46,6 +46,7 @@ body.lock{overflow:hidden}
 .jimA{width:52px;height:52px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);vertical-align:middle;margin-right:10px}
 @media(max-width:360px){.jimP{width:84px;height:100px}}
 [hidden]{display:none!important}
+/* fixes: small text 16px+; short landscape how-to fits above the bottom bar */.hint,.note{font-size:16px}#clist2 small{font-size:16px}@media(max-height:500px) and (orientation:landscape){.bar{padding:6px 16px}.howto ol{columns:2;column-gap:28px}.howto h2{margin-bottom:4px}.howto .jimA{width:40px;height:40px}}
 </style></head><body>
 <div id="glass"><svg viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
 <defs><pattern id="p" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="#0e5a3a"/><path d="M0 0L50 50L0 100Z" fill="#1d4fa8"/><path d="M100 0L50 50L100 100Z" fill="#0f7a4a"/><path d="M0 0L50 50L100 0Z" fill="#c99a2e"/><path d="M0 100L50 50L100 100Z" fill="#163f88"/><circle cx="50" cy="50" r="10" fill="#e8c35a"/><path d="M0 0L100 100M100 0L0 100" stroke="#111" stroke-width="4"/></pattern></defs>
@@ -158,15 +159,15 @@ function render(){const us=Math.max(0,+$("us").value||0),n=Math.max(1,Math.round
     el.querySelector("[data-hint]").innerHTML=(l.typed!==""?"Your typed price":"Official price")+(l.L.live?"":` <span class="warn">· using ${l.c.year} rate (no live rate)</span>`);
     el.querySelector("[data-send]").textContent="Send "+usd(l.send);el.querySelector("[data-f]").textContent=`${usd(l.cost)} × ${n}`});
   const loc=l=>l.c&&l.c.currency&&l.c.currency!=="USD"?` ≈ ${Math.round(l.send*l.L.rate).toLocaleString()} ${l.c.currency}`:"";
-  $("answer").innerHTML=`<h2>The plan</h2><div>Each one can buy <b>${n} ${item}</b></div>
+  $("answer").innerHTML=`<h2>The plan</h2><div>Each one can buy <b>${n} × ${item}</b></div>
 <div>United States is sent <span class="amt">${usd(p.usSend)}</span></div>
 <ul>${p.lines.filter(l=>l.c).map(l=>`<li>${l.name||"(Name / charity)"} — ${l.c.label}: <span class="amt">${usd(l.send)}</span><span class="hint">${loc(l)}${l.L.live?"":" (2024 rate)"}</span></li>`).join("")}</ul>
 <div class="total">Total ${usd(p.total)}</div><div class="actions"><button id="copy">📋 Copy plan</button></div><div class="hint" id="copied"></div>`;
-  $("copy").onclick=()=>{const t=`Jim's Gift Equalizer — each one can buy ${n} ${item}\nUnited States is sent ${usd(p.usSend)}\n`+p.lines.filter(l=>l.c).map(l=>`${l.name||"-"} (${l.c.label}): ${usd(l.send)} = ${usd(l.cost)} × ${n}${loc(l)}`).join("\n")+`\nTotal: ${usd(p.total)}\n(Plan only — no money is sent.)`;
+  $("copy").onclick=()=>{const t=`Jim's Gift Equalizer — each one can buy ${n} × ${item}\nUnited States is sent ${usd(p.usSend)}\n`+p.lines.filter(l=>l.c).map(l=>`${l.name||"(Name / charity)"} (${l.c.label}): ${usd(l.send)} = ${usd(l.cost)} × ${n}${loc(l)}`).join("\n")+`\nTotal: ${usd(p.total)}\n(Plan only — no money is sent.)`;
     const fb=()=>{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();const ok=document.execCommand("copy");ta.remove();window.__lastCopy=t;return ok?Promise.resolve():Promise.reject()};
     (navigator.clipboard&&window.isSecureContext?navigator.clipboard.writeText(t).then(()=>{window.__lastCopy=t}).catch(fb):fb()).then(()=>$("copied").textContent="Copied!",()=>$("copied").textContent="Copy failed — select text manually.")};
   $("cnt").textContent=`(${S.rows.length}/10)`;$("add").disabled=S.rows.length>=10;
-  $("barN").textContent=`${n} ${item}`;$("barT").textContent=usd(p.total)}
+  $("barN").textContent=`${n} × ${item}`;$("barT").textContent=usd(p.total)}
 ["us","n","item"].forEach(id=>$(id).addEventListener("input",render));
 $("add").onclick=()=>addRow({iso:""});
 $("official").onclick=()=>{S.rows.forEach(r=>r.typed="");drawRows()};
