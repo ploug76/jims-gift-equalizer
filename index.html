@@ -46,6 +46,9 @@ body.lock{overflow:hidden}
 .jimA{width:52px;height:52px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);vertical-align:middle;margin-right:10px}
 @media(max-width:360px){.jimP{width:84px;height:100px}}
 [hidden]{display:none!important}
+.give{display:inline-flex;align-items:center;min-height:48px;padding:10px 16px;border-radius:14px;background:#7a5a10;border:2px solid var(--gold);color:#fffaf0;font-weight:900;font-size:18px;text-decoration:none}.give:active{background:#a07818}
+.mission{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin-top:6px}.src{font-size:16px;opacity:.9}.nosend{background:rgba(255,210,122,.12);border:2px solid #ffd27a;border-radius:12px;padding:10px 12px;margin-top:12px;font-weight:800;font-size:16px;color:#ffe3a6}
+#itemChips button{flex:none}
 /* fixes: small text 16px+; short landscape how-to fits above the bottom bar */.hint,.note{font-size:16px}#clist2 small{font-size:16px}@media(max-height:500px) and (orientation:landscape){.bar{padding:6px 16px}.howto ol{columns:2;column-gap:28px}.howto h2{margin-bottom:4px}.howto .jimA{width:40px;height:40px}}
 </style></head><body>
 <div id="glass"><svg viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -61,14 +64,16 @@ body.lock{overflow:hidden}
 <main class="wrap">
 <button id="howOpen" type="button" hidden>❔ How to use this</button>
 <section class="panel howto" id="howto"><h2><img class="jimA" src="jim.jpg" alt="Jim">How to use this</h2><ol>
-<li>Type what they're buying.</li><li>Enter the cost of one in the United States (or tap a chip).</li><li>Pick how many each gets.</li>
+<li>Type what they're buying (or tap 🍚 Rice, 20 lb bag for real market prices).</li><li>Enter the cost of one in the United States (or tap a chip).</li><li>Pick how many each gets.</li>
 <li>Add each recipient: tap the country, add the name / charity.</li><li>Each row shows what to send; type a real local price if you know it.</li>
-<li>Total is at the bottom; tap Copy plan to share.</li></ol><p>This plans the amounts. It does not send money.</p><div class="actions"><button id="gotIt" type="button" style="font-size:22px;min-height:60px">✓ Got it</button></div></section>
+<li>Total is at the bottom; tap Copy plan to share.</li></ol><p>This plans the amounts. It doesn't send money or verify charities. Give through each mission's official page.</p><div class="actions"><button id="gotIt" type="button" style="font-size:22px;min-height:60px">✓ Got it</button></div></section>
 <section class="panel">
 <div class="jimhead"><img class="jimP" src="jim.jpg" alt="Jim"><div><h1>Jim's Gift Equalizer</h1><p class="sub">Give so each one can buy the same.</p></div></div>
 <label for="item">What are they buying?</label><input id="item" placeholder="example: supplies" value="supplies">
+<div class="chips" id="itemChips"><button type="button" id="riceBtn">🍚 Rice, 20 lb bag</button></div>
 <label for="us">Cost of one in the United States</label><div class="money"><span>$</span><input id="us" class="big" type="number" inputmode="decimal" min="0" step="0.01" value="50"></div>
 <div class="chips" id="usChips"></div>
+<div class="hint src" id="usSrc"></div>
 <label for="n">How many for each</label><div class="money"><span>×</span><input id="n" class="big" type="number" inputmode="numeric" min="1" step="1" value="1"></div>
 <div class="chips" id="nChips"></div>
 <p class="sentence" id="sentence"></p>
@@ -77,10 +82,12 @@ body.lock{overflow:hidden}
 <h2 style="margin:0;color:var(--gold)">Recipients <span class="hint" id="cnt"></span></h2>
 <div id="rows"></div>
 <div class="actions"><button id="add">+ Add recipient</button><button id="official">Official prices</button></div>
+<div class="actions"><button id="missions" type="button">⛪ Add mission presets (Haiti + Malawi)</button></div>
+<p class="nosend">This app doesn't send money or verify charities. Give through each mission's official page.</p>
 </section>
 <section class="panel answer" id="answer"></section>
 <section class="panel note">
-<b>About the numbers.</b> Price levels are from the World Bank (household consumption price level, mostly 2024; US = 100, stored as 1.0). Exchange rates are live today. A country's official cost = US cost × its 2024 household PPP, turned into dollars at today's rate. Official prices are cost of living, not one grocery item and not today's wire rate. Type a price when the real one is known. This app plans the amounts — it does not send money.
+<b>About the numbers.</b> Price levels are from the World Bank (household consumption price level, mostly 2024; US = 100, stored as 1.0). Exchange rates are live today. A country's official cost = US cost × its 2024 household PPP, turned into dollars at today's rate. Official prices are cost of living, not one grocery item and not today's wire rate. Type a price when the real one is known (shown as “your price”).<br><b>Rice, 20 lb bag</b> uses real market rice prices instead of the price level: US from the Bureau of Labor Statistics (series APU0000701312, U.S. city average), Haiti and Malawi from the World Food Programme (via HDX). Local prices are turned into dollars at today's live rate. 20 lb = 9.07 kg. Countries without a market rice price use the price level. <span id="riceInfo"></span><br>This app doesn't send money or verify charities. Give through each mission's official page.
 <p id="rateInfo"></p><button id="refresh">↻ Refresh rates</button>
 </section>
 </main>
@@ -102,14 +109,15 @@ if(typeof module!=="undefined")module.exports={FRIENDLY:window.FRIENDLY,ALIASES:
 (function(g){
 function round2(x){return Math.round((x+Number.EPSILON)*100)/100}
 // Cost of one item in a country: typed price wins, else US cost x official level.
-function costOfOne(usCost,level,typed){
+function costOfOne(usCost,level,typed,fixed){
   if(typed!==null&&typed!==undefined&&typed!==""&&isFinite(+typed))return +typed;
+  if(fixed!==null&&fixed!==undefined&&isFinite(fixed))return round2(fixed);
   return round2(usCost*level);
 }
 // Send = cost of one x how many. No budget, no dividing.
 function sendFor(cost,howMany){return round2(cost*howMany)}
 function plan(usCost,howMany,rows){
-  const lines=rows.map(r=>{const c=costOfOne(usCost,r.level,r.typed);return {...r,cost:c,send:sendFor(c,howMany)}});
+  const lines=rows.map(r=>{const c=costOfOne(usCost,r.level,r.typed,r.fixed);return {...r,cost:c,send:sendFor(c,howMany)}});
   const total=round2(lines.reduce((s,l)=>s+l.send,0));
   return {usSend:sendFor(usCost,howMany),lines,total};
 }
@@ -126,7 +134,7 @@ function searchCountries(q){q=norm(q);if(!q)return SORTED;const sc=c=>norm(c.lab
   return SORTED.map(c=>[sc(c),c]).filter(x=>x[0]<9).sort((a,b)=>a[0]-b[0]).map(x=>x[1])}
 const $=id=>document.getElementById(id);
 const usd=x=>"$"+x.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
-let live=null,liveInfo="";
+let live=null,liveInfo="",liveDate="";
 const S={rows:[]};
 // level for a country: today's PPP / live rate, else 2024 level
 function levelOf(c){if(c.iso==="USA")return{level:1,rate:1,live:true};
@@ -135,35 +143,73 @@ function levelOf(c){if(c.iso==="USA")return{level:1,rate:1,live:true};
 function chips(el,vals,fmt,inp){$(el).innerHTML=vals.map(v=>`<button data-v="${v}">${fmt(v)}</button>`).join("");
   $(el).onclick=e=>{const v=e.target.dataset.v;if(v){$(inp).value=v;render()}}}
 chips("usChips",[10,25,50,100],v=>"$"+v,"us");chips("nChips",[1,2,5,10],v=>"×"+v,"n");
-function addRow(r={}){if(S.rows.length>=10)return;S.rows.push({iso:r.iso??"USA",name:r.name||"",typed:r.typed??""});drawRows()}
-function drawRows(){$("rows").innerHTML=S.rows.map((r,i)=>`<div class="row" data-i="${i}">
+// Mission presets (official pages; links checked by hand on the date shown).
+const LINK_CHECKED="Oct 28, 2026";
+const MISSIONS={branch:{name:"Branch Lutheran Schools of Haiti",iso:"HTI",url:"https://branchlutheranschoolshaiti.org/donate.html"},
+  wels:{name:"WELS One Africa Team",iso:"MWI",url:"https://wels.net/serving-others/missions/africa/"}};
+// Rice prices come from prices.json (refresh by hand with scripts/refresh_prices.py).
+const RICE_ITEM="Rice, 20 lb bag";let PRICES=null,rice=false;
+const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const fmtNum=x=>(+x).toLocaleString("en-US",{maximumFractionDigits:3});
+function riceP(iso){return rice&&PRICES&&PRICES.prices[iso]||null}
+function bagLocal(p){return p.price*(p.unit==="kg"?PRICES.bag_kg:PRICES.bag_lb)}
+function riceSrc(p){return `Rice: ${p.currency==="USD"?"$"+fmtNum(p.price):p.currency+" "+fmtNum(p.price)}/${p.unit}, ${p.place}, ${p.source}, ${p.label}`}
+function usRiceCost(){const p=PRICES&&PRICES.prices.USA;return p?Calc.round2(bagLocal(p)):null}
+async function loadPrices(){try{const r=await fetch("prices.json",{cache:"no-cache"});if(!r.ok)throw 0;PRICES=await r.json();
+  $("riceInfo").textContent=`Rice prices last refreshed ${PRICES.refreshed}.`}catch(e){PRICES=null;$("riceInfo").textContent="⚠ Rice price file could not load."}
+  $("riceBtn").disabled=!PRICES;render()}
+$("riceBtn").onclick=()=>{if(!PRICES)return;rice=true;$("item").value=RICE_ITEM;$("us").value=usRiceCost().toFixed(2);render()};
+function addRow(r={}){if(S.rows.length>=10)return;S.rows.push({iso:r.iso??"USA",name:r.name||"",typed:r.typed??"",mission:r.mission||""});drawRows()}
+function addMissions(){Object.keys(MISSIONS).forEach(k=>{if(S.rows.some(r=>r.mission===k))return;const m=MISSIONS[k];
+  const blank=S.rows.find(r=>!r.iso&&!r.name&&r.typed==="");
+  if(blank){blank.iso=m.iso;blank.name=m.name;blank.mission=k}else if(S.rows.length<10)S.rows.push({iso:m.iso,name:m.name,typed:"",mission:k})});drawRows()}
+$("missions").onclick=addMissions;
+function drawRows(){$("rows").innerHTML=S.rows.map((r,i)=>{const m=r.mission&&MISSIONS[r.mission];return `<div class="row" data-i="${i}">
 <div class="rowhead"><b>#${i+1}</b><button data-del="${i}" aria-label="Remove">✕</button></div>
 <label>Country</label><button type="button" class="pick" data-pick="${i}"><span>${r.iso?byIso[r.iso].label:"Choose a country…"}</span><span aria-hidden="true">▾</span></button>
-<label>Name / charity</label><input data-k="name" value="${r.name.replace(/"/g,"&quot;")}" placeholder="Name / charity">
+<label>Name / charity</label><input data-k="name" value="${esc(r.name)}" placeholder="Name / charity">
+${m?`<div class="mission"><a class="give" href="${m.url}" target="_blank" rel="noopener noreferrer">Give directly ↗</a><span class="hint">official page · link checked ${LINK_CHECKED}</span></div>`:""}
 <label>Costs here</label><div class="money"><span style="font-size:1.2rem">$</span><input data-k="typed" type="number" inputmode="decimal" step="0.01" value="${r.typed}" style="padding-left:30px"></div>
 <div class="hint" data-hint></div>
-<div class="send" data-send></div><div class="formula" data-f></div></div>`).join("");render()}
+<div class="send" data-send></div><div class="formula" data-f></div></div>`}).join("");render()}
 $("rows").addEventListener("input",e=>{const i=+e.target.closest(".row").dataset.i,k=e.target.dataset.k,r=S.rows[i];
-  if(!k)return;if(k==="typed"){const v=e.target.value;r.typed=(v===""||!isFinite(+v)||+v<0)?"":v}else r[k]=e.target.value;render()});
+  if(!k)return;if(k==="typed"){const v=e.target.value;r.typed=(v===""||!isFinite(+v)||+v<0)?"":v}else r[k]=e.target.value;
+  if(k==="name"&&r.mission&&r.name!==MISSIONS[r.mission].name){r.mission="";drawRows();return}render()});
 $("rows").addEventListener("click",e=>{const pb=e.target.closest("[data-pick]");if(pb){openSheet(+pb.dataset.pick);return}const d=e.target.dataset.del;if(d!==undefined){S.rows.splice(+d,1);drawRows()}});
+function rateSrc(L){return L.live?`live rate ${liveDate}`.trim():"2024 World Bank rate"}
 function render(){const us=Math.max(0,+$("us").value||0),n=Math.max(1,Math.round(+$("n").value||1));
   document.querySelectorAll("#usChips button").forEach(b=>b.classList.toggle("on",+b.dataset.v===us));
   document.querySelectorAll("#nChips button").forEach(b=>b.classList.toggle("on",+b.dataset.v===n));
+  if(rice&&$("item").value.trim()!==RICE_ITEM)rice=false;
+  $("riceBtn").classList.toggle("on",rice);
   const item=$("item").value.trim()||"supplies";
+  const usP=riceP("USA"),usMarket=usP&&Math.abs(us-usRiceCost())<0.005;
+  $("usSrc").textContent=usMarket?`${riceSrc(usP)} → 20 lb = ${usd(usRiceCost())}`:`US cost: your price`+(rice&&usP?` (market: ${usd(usRiceCost())}, ${riceSrc(usP)})`:"");
   $("sentence").innerHTML=`United States is sent <b>${usd(Calc.sendFor(us,n))}</b> (${usd(us)} × ${n}). Every other place is sent its own cost times that same number.`;
-  const rows=S.rows.map(r=>{const c=byIso[r.iso]||null,L=c?levelOf(c):{level:0,rate:1,live:true};return{...r,c,L,level:L.level,typed:c?r.typed:"0"}});
+  const rows=S.rows.map(r=>{const c=byIso[r.iso]||null,L=c?levelOf(c):{level:0,rate:1,live:true};
+    const rp=c&&c.iso!=="USA"?riceP(c.iso):null,bagUsd=rp?bagLocal(rp)/L.rate:null;
+    return{...r,c,L,level:L.level,typed:c?r.typed:"0",rp,bagUsd,fixed:bagUsd}});
   const p=Calc.plan(us,n,rows);
+  const srcOf=l=>{if(l.typed!=="")return "your price";if(l.c.iso==="USA")return usMarket?riceSrc(usP):"US cost: your price";
+    if(l.rp)return `${riceSrc(l.rp)} · ${rateSrc(l.L)}`;
+    return `${rice?"No market rice price here — ":""}World Bank ${l.c.year} price level · ${rateSrc(l.L)}`};
   document.querySelectorAll("#rows .row").forEach((el,i)=>{const l=p.lines[i];
-    el.querySelector("[data-k=typed]").placeholder=Calc.costOfOne(us,l.level,"").toFixed(2)+" (official)";
+    el.querySelector("[data-k=typed]").placeholder=Calc.costOfOne(us,l.level,"",l.fixed).toFixed(2)+((l.rp||(l.c&&l.c.iso==="USA"&&usMarket))?" (market)":" (official)");
     if(!l.c){el.querySelector("[data-k=typed]").placeholder="";el.querySelector("[data-hint]").textContent="Pick a country";el.querySelector("[data-send]").textContent="Send $0.00";el.querySelector("[data-f]").textContent="";return}
-    el.querySelector("[data-hint]").innerHTML=(l.typed!==""?"Your typed price":"Official price")+(l.L.live?"":` <span class="warn">· using ${l.c.year} rate (no live rate)</span>`);
+    el.querySelector("[data-hint]").innerHTML=(l.typed!==""?"Your price":(l.rp||(l.c.iso==="USA"&&usMarket))?"Market price":l.c.iso==="USA"?"US cost":"Official price")+` <span class="src">· ${esc(srcOf(l))}</span>`+(l.L.live?"":` <span class="warn">· using ${l.c.year} rate (no live rate)</span>`);
     el.querySelector("[data-send]").textContent="Send "+usd(l.send);el.querySelector("[data-f]").textContent=`${usd(l.cost)} × ${n}`});
   const loc=l=>l.c&&l.c.currency&&l.c.currency!=="USD"?` ≈ ${Math.round(l.send*l.L.rate).toLocaleString()} ${l.c.currency}`:"";
-  $("answer").innerHTML=`<h2>The plan</h2><div>Each one can buy <b>${n} × ${item}</b></div>
-<div>United States is sent <span class="amt">${usd(p.usSend)}</span></div>
-<ul>${p.lines.filter(l=>l.c).map(l=>`<li>${l.name||"(Name / charity)"} — ${l.c.label}: <span class="amt">${usd(l.send)}</span><span class="hint">${loc(l)}${l.L.live?"":" (2024 rate)"}</span></li>`).join("")}</ul>
-<div class="total">Total ${usd(p.total)}</div><div class="actions"><button id="copy">📋 Copy plan</button></div><div class="hint" id="copied"></div>`;
-  $("copy").onclick=()=>{const t=`Jim's Gift Equalizer — each one can buy ${n} × ${item}\nUnited States is sent ${usd(p.usSend)}\n`+p.lines.filter(l=>l.c).map(l=>`${l.name||"(Name / charity)"} (${l.c.label}): ${usd(l.send)} = ${usd(l.cost)} × ${n}${loc(l)}`).join("\n")+`\nTotal: ${usd(p.total)}\n(Plan only — no money is sent.)`;
+  // Rice: show bags (fractions) at the market price, plus local currency.
+  const bagsTxt=l=>{const unit=l.c.iso==="USA"?(usP?usRiceCost():l.cost):(l.bagUsd||l.cost);const b=unit>0?l.send/unit:0;
+    const lv=l.rp&&l.typed===""?bagLocal(l.rp)*n:l.send*l.L.rate;const lc=l.c.currency&&l.c.currency!=="USD"?` (${l.c.currency} ~${Math.round(lv).toLocaleString("en-US")})`:"";return ` ≈ ${b.toFixed(1)} × 20 lb bag${lc}`};
+  const showBags=rice;
+  const usLine=showBags&&usP?` ≈ ${(p.usSend/usRiceCost()).toFixed(1)} × 20 lb bag`:"";
+  $("answer").innerHTML=`<h2>The plan</h2><div>Each one can buy <b>${n} × ${esc(item)}</b></div>
+<div>United States is sent <span class="amt">${usd(p.usSend)}</span>${usLine}</div>
+<ul>${p.lines.filter(l=>l.c).map(l=>`<li>${esc(l.name||"(Name / charity)")} — ${l.c.label}: <span class="amt">${usd(l.send)}</span>${showBags?bagsTxt(l):`<span class="hint">${loc(l)}${l.L.live?"":" (2024 rate)"}</span>`}<div class="src">${esc(srcOf(l))}</div></li>`).join("")}</ul>
+<div class="total">Total ${usd(p.total)}</div><div class="actions"><button id="copy">📋 Copy plan</button></div><div class="hint" id="copied"></div>
+<p class="nosend">This app doesn't send money or verify charities. Give through each mission's official page.</p>`;
+  $("copy").onclick=()=>{const t=`Jim's Gift Equalizer — each one can buy ${n} × ${item}\nUnited States is sent ${usd(p.usSend)}${usLine}\n`+p.lines.filter(l=>l.c).map(l=>`${l.name||"(Name / charity)"} (${l.c.label}): ${usd(l.send)} = ${usd(l.cost)} × ${n}${showBags?bagsTxt(l):loc(l)} [${srcOf(l)}]${l.mission&&MISSIONS[l.mission]?`\n  Give directly: ${MISSIONS[l.mission].url}`:""}`).join("\n")+`\nTotal: ${usd(p.total)}\n(Plan only — no money is sent.)\nThis app doesn't send money or verify charities. Give through each mission's official page.`;
     const fb=()=>{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();const ok=document.execCommand("copy");ta.remove();window.__lastCopy=t;return ok?Promise.resolve():Promise.reject()};
     (navigator.clipboard&&window.isSecureContext?navigator.clipboard.writeText(t).then(()=>{window.__lastCopy=t}).catch(fb):fb()).then(()=>$("copied").textContent="Copied!",()=>$("copied").textContent="Copy failed — select text manually.")};
   $("cnt").textContent=`(${S.rows.length}/10)`;$("add").disabled=S.rows.length>=10;
@@ -173,14 +219,14 @@ $("add").onclick=()=>addRow({iso:""});
 $("official").onclick=()=>{S.rows.forEach(r=>r.typed="");drawRows()};
 async function loadRates(){$("rateInfo").textContent="Loading live rates…";
   try{const j=await (await fetch("https://open.er-api.com/v6/latest/USD",{cache:"no-store"})).json();if(j.result!=="success")throw 0;
-    live=j.rates;liveInfo=`Rates updated ${new Date(j.time_last_update_unix*1000).toLocaleString()} · source: ExchangeRate-API (open.er-api.com)`}
+    live=j.rates;liveDate=new Date(j.time_last_update_unix*1000).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});liveInfo=`Rates updated ${new Date(j.time_last_update_unix*1000).toLocaleString()} · source: ExchangeRate-API (open.er-api.com)`}
   catch(e){try{const j=await (await fetch("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json",{cache:"no-store"})).json();
-    live={};for(const k in j.usd)live[k.toUpperCase()]=j.usd[k];liveInfo=`Rates updated ${j.date} · source: fawazahmed0 currency-api`}
+    live={};for(const k in j.usd)live[k.toUpperCase()]=j.usd[k];liveDate=j.date;liveInfo=`Rates updated ${j.date} · source: fawazahmed0 currency-api`}
   catch(e2){live=null;liveInfo="⚠ Live rates unavailable — using World Bank 2024 rates and price levels."}}
   $("rateInfo").textContent=liveInfo;render()}
 $("refresh").onclick=loadRates;
-addRow({iso:"USA"});addRow({iso:""});loadRates();
-window.__app={levelOf,byIso,S};
+addRow({iso:"USA"});addRow({iso:""});loadRates();loadPrices();
+window.__app={levelOf,byIso,S,get prices(){return PRICES},get rice(){return rice}};
 
 let pickFor=-1;
 function drawList(){const cur=S.rows[pickFor]&&S.rows[pickFor].iso;const L=searchCountries($("q").value);
@@ -191,7 +237,7 @@ $("q").addEventListener("input",drawList);
 $("q").addEventListener("keydown",e=>{if(e.key==="Enter"){const b=$("clist2").querySelector("[data-iso]");if(b)b.click()}if(e.key==="Escape")closeSheet()});
 $("closeSheet").onclick=closeSheet;
 $("clist2").addEventListener("click",e=>{const b=e.target.closest("[data-iso]");if(!b||pickFor<0)return;const r=S.rows[pickFor];
-  if(r.iso!==b.dataset.iso){r.iso=b.dataset.iso;r.typed=""}closeSheet();drawRows()});
+  if(r.iso!==b.dataset.iso){r.iso=b.dataset.iso;r.typed="";r.mission=""}closeSheet();drawRows()});
 window.__app.searchCountries=searchCountries;
 
 function setHow(collapsed){$("howto").hidden=collapsed;$("howOpen").hidden=!collapsed;try{localStorage.setItem("jte_howto",collapsed?"1":"0")}catch(e){}}

@@ -1,0 +1,40 @@
+{
+  "item": "Rice, 20 lb bag",
+  "bag_lb": 20,
+  "bag_kg": 9.0718474,
+  "refreshed": "2026-10-28",
+  "prices": {
+    "USA": {
+      "currency": "USD",
+      "price": 1.118,
+      "unit": "lb",
+      "place": "U.S. city average",
+      "source": "BLS",
+      "period": "2026-09",
+      "label": "Sep 2026",
+      "series": "APU0000701312",
+      "url": "https://data.bls.gov/timeseries/APU0000701312"
+    },
+    "HTI": {
+      "currency": "HTG",
+      "price": 192.3,
+      "unit": "kg",
+      "place": "Port-au-Prince",
+      "source": "WFP",
+      "period": "2026-08",
+      "label": "Aug 2026",
+      "url": "https://data.humdata.org/dataset/wfp-food-prices-for-haiti"
+    },
+    "MWI": {
+      "currency": "MWK",
+      "price": 4000.0,
+      "unit": "kg",
+      "place": "Lilongwe",
+      "source": "WFP",
+      "period": "2026-09",
+      "label": "Sep 2026",
+      "url": "https://data.humdata.org/dataset/wfp-food-prices-for-malawi",
+      "note": "median of Area 23 4000, Kamwendo 4000, Songwe 2750"
+    }
+  }
+}
