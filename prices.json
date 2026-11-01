@@ -2,7 +2,7 @@
   "item": "Rice, 20 lb bag",
   "bag_lb": 20,
   "bag_kg": 9.0718474,
-  "refreshed": "2026-10-28",
+  "refreshed": "2026-11-01",
   "prices": {
     "USA": {
       "currency": "USD",
@@ -36,5 +36,209 @@
       "url": "https://data.humdata.org/dataset/wfp-food-prices-for-malawi",
       "note": "median of Area 23 4000, Kamwendo 4000, Songwe 2750"
     }
+  },
+  "wishlist": {
+    "HTI": [
+      {
+        "key": "rice",
+        "currency": "HTG",
+        "price": 1744.52,
+        "unit_price": 192.3,
+        "unit": "KG",
+        "qty": 9.0718474,
+        "place": "Port-au-Prince",
+        "source": "WFP",
+        "period": "2026-08",
+        "label": "Aug 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-haiti",
+        "markets": "Port-au-Prince 192.3"
+      },
+      {
+        "key": "beans_black",
+        "currency": "HTG",
+        "price": 1511.82,
+        "unit_price": 333.3,
+        "unit": "KG",
+        "qty": 4.5359237,
+        "place": "Port-au-Prince",
+        "source": "WFP",
+        "period": "2026-08",
+        "label": "Aug 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-haiti",
+        "markets": "Port-au-Prince 333.3"
+      },
+      {
+        "key": "oil_gal",
+        "currency": "HTG",
+        "price": 1228.6,
+        "unit_price": 1228.6,
+        "unit": "Gallon",
+        "qty": 1,
+        "place": "Port-au-Prince",
+        "source": "WFP",
+        "period": "2026-08",
+        "label": "Aug 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-haiti",
+        "markets": "Port-au-Prince 1228.6"
+      },
+      {
+        "key": "maize_meal",
+        "currency": "HTG",
+        "price": 1493.23,
+        "unit_price": 329.2,
+        "unit": "KG",
+        "qty": 4.5359237,
+        "place": "Port-au-Prince",
+        "source": "WFP",
+        "period": "2026-08",
+        "label": "Aug 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-haiti",
+        "markets": "Port-au-Prince 329.2"
+      },
+      {
+        "key": "sugar",
+        "currency": "HTG",
+        "price": 172.4,
+        "unit_price": 172.4,
+        "unit": "KG",
+        "qty": 1,
+        "place": "Port-au-Prince",
+        "source": "WFP",
+        "period": "2026-08",
+        "label": "Aug 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-haiti",
+        "markets": "Port-au-Prince 172.4"
+      },
+      {
+        "key": "salt",
+        "currency": "HTG",
+        "price": 342.9,
+        "unit_price": 342.9,
+        "unit": "KG",
+        "qty": 1,
+        "place": "Port-au-Prince",
+        "source": "WFP",
+        "period": "2026-08",
+        "label": "Aug 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-haiti",
+        "markets": "Port-au-Prince 342.9"
+      },
+      {
+        "key": "eggs30",
+        "currency": "HTG",
+        "price": 585.7,
+        "unit_price": 585.7,
+        "unit": "30 pcs",
+        "qty": 1,
+        "place": "Port-au-Prince",
+        "source": "WFP",
+        "period": "2026-08",
+        "label": "Aug 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-haiti",
+        "markets": "Port-au-Prince 585.7"
+      },
+      {
+        "key": "school",
+        "price": null
+      },
+      {
+        "key": "med",
+        "price": null
+      }
+    ],
+    "MWI": [
+      {
+        "key": "rice",
+        "currency": "MWK",
+        "price": 36287.39,
+        "unit_price": 4000.0,
+        "unit": "KG",
+        "qty": 9.0718474,
+        "place": "Lilongwe",
+        "source": "WFP",
+        "period": "2026-09",
+        "label": "Sep 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-malawi",
+        "markets": "Area 23 4000, Kamwendo 4000, Songwe 2750"
+      },
+      {
+        "key": "beans",
+        "currency": "MWK",
+        "price": 27215.54,
+        "unit_price": 6000.0,
+        "unit": "KG",
+        "qty": 4.5359237,
+        "place": "Lilongwe",
+        "source": "WFP",
+        "period": "2026-10",
+        "label": "Oct 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-malawi",
+        "markets": "Songwe 6000"
+      },
+      {
+        "key": "maize50",
+        "currency": "MWK",
+        "price": 47500.0,
+        "unit_price": 950.0,
+        "unit": "KG",
+        "qty": 50,
+        "place": "Lilongwe",
+        "source": "WFP",
+        "period": "2026-10",
+        "label": "Oct 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-malawi",
+        "markets": "Songwe 950"
+      },
+      {
+        "key": "oil_l",
+        "currency": "MWK",
+        "price": 8500.0,
+        "unit_price": 8500.0,
+        "unit": "L",
+        "qty": 1,
+        "place": "Lilongwe",
+        "source": "WFP",
+        "period": "2026-10",
+        "label": "Oct 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-malawi",
+        "markets": "Songwe 8500"
+      },
+      {
+        "key": "sugar",
+        "currency": "MWK",
+        "price": 5500.0,
+        "unit_price": 5500.0,
+        "unit": "KG",
+        "qty": 1,
+        "place": "Lilongwe",
+        "source": "WFP",
+        "period": "2026-10",
+        "label": "Oct 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-malawi",
+        "markets": "Songwe 5500"
+      },
+      {
+        "key": "soap",
+        "currency": "MWK",
+        "price": 3000.0,
+        "unit_price": 3000.0,
+        "unit": "300 G",
+        "qty": 1,
+        "place": "Lilongwe",
+        "source": "WFP",
+        "period": "2026-09",
+        "label": "Sep 2026",
+        "url": "https://data.humdata.org/dataset/wfp-food-prices-for-malawi",
+        "markets": "Area 23 3000, Kamwendo 3000, Songwe 3000"
+      },
+      {
+        "key": "school",
+        "price": null
+      },
+      {
+        "key": "med",
+        "price": null
+      }
+    ]
   }
 }

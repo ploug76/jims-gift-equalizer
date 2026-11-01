@@ -11,6 +11,7 @@ Sources
   Malawi WFP food prices via HDX, "Rice", KG, Retail, Lilongwe markets
          (median of the Lilongwe / Lilongwe City markets in the latest month)
 
+Also writes "wishlist": per-mission item prices (WFP, same markets).
 Optional: --hti FILE / --mwi FILE to use already-downloaded WFP CSVs.
 Standard library only.
 """
@@ -72,17 +73,53 @@ def wfp(iso, text, match, place):
     return out
 
 
+# Wishlist items (mission presets). Each real price is WFP retail, latest month, median of the
+# listed markets. Items with no WFP series (school kit, medicine kit) are "price set by mission".
+WISH = {
+    "HTI": [("rice", "Rice", "KG", 9.0718474), ("beans_black", "Beans (black)", "KG", 4.5359237),
+            ("oil_gal", "Oil (vegetable)", "Gallon", 1), ("maize_meal", "Maize meal", "KG", 4.5359237),
+            ("sugar", "Sugar", "KG", 1), ("salt", "Salt", "KG", 1), ("eggs30", "Eggs", "30 pcs", 1),
+            ("school", None, None, None), ("med", None, None, None)],
+    "MWI": [("rice", "Rice", "KG", 9.0718474), ("beans", "Beans", "KG", 4.5359237),
+            ("maize50", "Maize", "KG", 50), ("oil_l", "Oil (vegetable)", "L", 1), ("sugar", "Sugar", "KG", 1),
+            ("soap", "Bathing soap", "300 G", 1), ("school", None, None, None), ("med", None, None, None)],
+}
+
+
+def wfp_item(iso, text, match, place, key, commodity, unit, qty):
+    if not commodity:
+        return {"key": key, "price": None}
+    rows = [r for r in csv.DictReader(io.StringIO(text))
+            if r["commodity"] == commodity and r["unit"] == unit and r["pricetype"] == "Retail" and match(r)]
+    if not rows:
+        return {"key": key, "price": None}
+    latest = max(r["date"] for r in rows)
+    cur = [r for r in rows if r["date"] == latest]
+    unit_price = statistics.median(float(r["price"]) for r in cur)
+    y, m = int(latest[:4]), int(latest[5:7])
+    return {"key": key, "currency": cur[0]["currency"], "price": round(unit_price * qty, 2),
+            "unit_price": round(unit_price, 2), "unit": unit, "qty": qty, "place": place, "source": "WFP",
+            "period": f"{y}-{m:02d}", "label": month_label(y, m), "url": f"https://data.humdata.org/dataset/{HDX[iso]}",
+            "markets": ", ".join(f"{r['market']} {float(r['price']):g}" for r in cur)}
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--hti"); ap.add_argument("--mwi")
     a = ap.parse_args()
+    hti, mwi = wfp_csv("HTI", a.hti), wfp_csv("MWI", a.mwi)
+    m_hti, m_mwi = (lambda r: r["market"] == "Port-au-Prince"), (lambda r: r["admin2"].startswith("Lilongwe"))
     data = {
         "item": "Rice, 20 lb bag", "bag_lb": 20, "bag_kg": 9.0718474,
         "refreshed": datetime.date.today().isoformat(),
         "prices": {
             "USA": bls(),
-            "HTI": wfp("HTI", wfp_csv("HTI", a.hti), lambda r: r["market"] == "Port-au-Prince", "Port-au-Prince"),
-            "MWI": wfp("MWI", wfp_csv("MWI", a.mwi), lambda r: r["admin2"].startswith("Lilongwe"), "Lilongwe"),
+            "HTI": wfp("HTI", hti, m_hti, "Port-au-Prince"),
+            "MWI": wfp("MWI", mwi, m_mwi, "Lilongwe"),
+        },
+        "wishlist": {
+            "HTI": [wfp_item("HTI", hti, m_hti, "Port-au-Prince", *w) for w in WISH["HTI"]],
+            "MWI": [wfp_item("MWI", mwi, m_mwi, "Lilongwe", *w) for w in WISH["MWI"]],
         },
     }
     with open(OUT, "w", encoding="utf-8") as f:
