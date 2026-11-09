@@ -1,0 +1,25 @@
+{
+  "name": "Jim's Gift Equalizer",
+  "short_name": "Gift Equalizer",
+  "description": "Plan gifts so each person in each country can buy the same thing. Plans amounts only; never sends money.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1a2744",
+  "theme_color": "#1a2744",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
