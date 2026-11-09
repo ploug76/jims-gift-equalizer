@@ -65,7 +65,17 @@ textarea{width:100%;font:inherit;font-size:17px;color:#123;background:var(--crea
 .warnbox{border:2px solid #ffd27a;border-radius:12px;padding:10px;color:#ffe3a6;font-weight:800;font-size:16px}
 [dir=rtl] .money span{left:auto;right:14px}[dir=rtl] .money input{padding-left:12px;padding-right:40px}[dir=rtl] .pick{text-align:right}
 input[type=number],input[type=url],#mkCur{direction:ltr}[dir=rtl] .answer ul{padding-right:0}
-</style></head><body>
+</style><link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1a2744">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function () {});
+  });
+}
+</script>
+</head><body>
 <div id="glass"><svg viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
 <defs><pattern id="p" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="#0e5a3a"/><path d="M0 0L50 50L0 100Z" fill="#1d4fa8"/><path d="M100 0L50 50L100 100Z" fill="#0f7a4a"/><path d="M0 0L50 50L100 0Z" fill="#c99a2e"/><path d="M0 100L50 50L100 100Z" fill="#163f88"/><circle cx="50" cy="50" r="10" fill="#e8c35a"/><path d="M0 0L100 100M100 0L0 100" stroke="#111" stroke-width="4"/></pattern></defs>
 <rect width="400" height="800" fill="url(#p)"/><rect width="400" height="800" fill="none" stroke="#111" stroke-width="14"/>

@@ -32,3 +32,12 @@ Language names come from the browser (`Intl.DisplayNames`). UI translations in
 `lang/<code>.json` are machine-translated (Google Translate) from the English
 strings in `index.html`; English is the original. Re-run by hand:
 `python3 scripts/translate.py` (or a list of codes), then commit.
+
+## Install as an app
+
+Open https://ploug76.github.io/jims-gift-equalizer/ then:
+- Android / Windows Chrome: menu → Install app / Add to Home screen
+- iPhone Safari: Share → Add to Home Screen
+
+Works offline after the first load for the app shell. Live exchange rates still need the internet when available.
+
